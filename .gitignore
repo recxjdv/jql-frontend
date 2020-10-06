@@ -1,0 +1,21 @@
+# Logs
+logs
+*.log
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# jshint
+.jshintrc
+
+# eslint
+.eslintrc.js
+# Optional eslint cache
+.eslintcache
+
+# dotenv environment variables file
+.env
+.env.test
