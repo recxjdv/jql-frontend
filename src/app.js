@@ -27,6 +27,11 @@ function getData(id) {
   // get /events/
 }
 
+function createApplicationView(view, applicationDiv) {
+  applicationDiv.innerHTML = '';
+  applicationDiv.appendChild(addHeader('h2', view));
+}
+
 // Ref: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function
 function doNavigation(event) {
   // Remove the existing active class
@@ -35,12 +40,15 @@ function doNavigation(event) {
 
   // Set the selected list item as active
   const listTarget = `nav-item anchor-${event.currentTarget.destination}`;
-  console.log(listTarget);
   const makeActiveList = document.getElementsByClassName(listTarget)[0];
-  console.log(makeActiveList);
   const makeActiveAnchor = makeActiveList.getElementsByTagName('a')[0];
-  console.log(makeActiveAnchor);
   makeActiveAnchor.classList.add('active');
+
+  // Render the view
+  // FIXME: the hard coding of the div id here
+  const applicationDivId = 'application';
+  const applicationDiv = document.getElementById(applicationDivId);
+  createApplicationView(event.currentTarget.destination, applicationDiv);
 }
 
 function createNavigationView(destinations, navgationDiv) {
@@ -72,6 +80,7 @@ function createNavigationView(destinations, navgationDiv) {
 // Todo this should render a complete page.
 function renderPage(destinations, applicationDiv, navgationDiv) {
   createNavigationView(destinations, navgationDiv);
+  createApplicationView('home', applicationDiv);
 }
 
 // Create outer Bootstrap container
