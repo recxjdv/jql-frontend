@@ -19,37 +19,59 @@ function addHeader(headerSize, headerText) {
   return element;
 }
 
-// Ref: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function
-function doNavigation(event) {
-  console.log(`You clicked: ${event.currentTarget.destination}`);
+// TODO:
+function getData(id) {
+  // if id
+  // return object containing a GET /events/{id} output
+  // else
+  // get /events/
 }
 
-function createNavigationView(destinations, applicationDiv) {
+// Ref: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function
+function doNavigation(event) {
+  // Remove the existing active class
+  const makeInActiveAnchor = document.getElementsByClassName('nav-link active')[0];
+  makeInActiveAnchor.className = 'nav-link';
+
+  // Set the selected list item as active
+  const listTarget = `nav-item anchor-${event.currentTarget.destination}`;
+  console.log(listTarget);
+  const makeActiveList = document.getElementsByClassName(listTarget)[0];
+  console.log(makeActiveList);
+  const makeActiveAnchor = makeActiveList.getElementsByTagName('a')[0];
+  console.log(makeActiveAnchor);
+  makeActiveAnchor.classList.add('active');
+}
+
+function createNavigationView(destinations, navgationDiv) {
   // List of destinations, each with click event handler
   const unorderedList = document.createElement('ul');
-  // Sequential for loop
+  unorderedList.className = 'nav nav-tabs';
+  // Sequential for loop over each destination
   const destinationsLength = destinations.length;
   for (let i = 0; i < destinationsLength; i += 1) {
     const listItem = document.createElement('li');
-    listItem.id = `nav-${destinations[i]}`;
-    const listText = document.createTextNode(destinations[i]);
-    listItem.appendChild(listText);
-    listItem.addEventListener('click', doNavigation, false);
-    listItem.destination = destinations[i];
+    listItem.className = `nav-item anchor-${destinations[i]}`;
+    const listAnchor = document.createElement('a');
+    if (destinations[i] === 'home') {
+      listAnchor.className = 'nav-link active';
+    } else {
+      listAnchor.className = 'nav-link';
+    }
+    listAnchor.href = '#';
+    const listAnchorText = document.createTextNode(destinations[i]);
+    listAnchor.appendChild(listAnchorText);
+    listAnchor.addEventListener('click', doNavigation, false);
+    listAnchor.destination = destinations[i];
+    listItem.appendChild(listAnchor);
     unorderedList.appendChild(listItem);
   }
-  applicationDiv.appendChild(unorderedList);
+  navgationDiv.appendChild(unorderedList);
 }
 
-function renderPage(destinations, applicationDiv) {
-  const destinationsLength = destinations.length;
-  for (let i = 0; i < destinationsLength; i += 1) {
-    if (destinations[i] === 'home') {
-      createNavigationView(destinations, applicationDiv);
-    } else {
-      console.log(`Unhandled destination: ${destinations[i]}`);
-    }
-  }
+// Todo this should render a complete page.
+function renderPage(destinations, applicationDiv, navgationDiv) {
+  createNavigationView(destinations, navgationDiv);
 }
 
 // Create outer Bootstrap container
@@ -60,6 +82,11 @@ const boostrapContainer = document.getElementById(boostrapContainerId);
 
 // Create title header
 boostrapContainer.appendChild(addHeader('h1', 'jql FrontEnd'));
+
+// Create navigation container
+const navigationDivClass = 'navigation';
+const navigationDivId = 'navigation';
+boostrapContainer.appendChild(createDiv(navigationDivId, navigationDivClass));
 
 // Create outer application container
 const applicationDivClass = 'application';
@@ -75,4 +102,5 @@ const destinations = [
   'knownUnsafe'
 ];
 const applicationDiv = document.getElementById(applicationDivId);
-renderPage(destinations, applicationDiv);
+const navgationDiv = document.getElementById(navigationDivId);
+renderPage(destinations, applicationDiv, navgationDiv);
