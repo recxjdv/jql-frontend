@@ -4,6 +4,7 @@
 // Import CSS
 // - Bootstrap
 import './css/assets/bootstrap.css';
+import './bootstrap.css.map';
 
 function createDiv(boostrapContainerId, containerClass) {
   const element = document.createElement('div');
