@@ -90,7 +90,7 @@ document.body.appendChild(createDiv(boostrapContainerId, boostrapContainerClass)
 const boostrapContainer = document.getElementById(boostrapContainerId);
 
 // Create title header
-boostrapContainer.appendChild(addHeader('h1', 'jql FrontEnd'));
+// boostrapContainer.appendChild(addHeader('h1', 'jql FrontEnd'));
 
 // Create navigation container
 const navigationDivClass = 'navigation';
