@@ -1,9 +1,8 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
   entry: {
     app: './src/app.js',
   },
@@ -12,10 +11,7 @@ module.exports = {
     contentBase: './dist'
   },
   plugins: [
-    // new CleanWebpackPlugin(),
-    new CleanWebpackPlugin({
-      cleanStaleWebpackAssets: false
-    }),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Frontend | jql',
     }),

@@ -94,6 +94,9 @@ function renderPage(destinations, applicationDiv, navgationDiv) {
   createApplicationView('home', applicationDiv);
 }
 
+// Log environment to the console
+console.log(`Application running in ${process.env.NODE_ENV} mode`);
+
 // Create outer Bootstrap container
 const boostrapContainerClass = 'container';
 const boostrapContainerId = 'boostrapContainer';
