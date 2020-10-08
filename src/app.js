@@ -1,10 +1,20 @@
 // import $ from 'jquery';
 // import bootstrap from 'bootstrap';
 
+// Import Images
+// - favicon (Ref: https://favicon.io/favicon-generator/)
+import './images/favicon/android-chrome-192x192.png';
+import './images/favicon/android-chrome-512x512.png';
+import './images/favicon/apple-touch-icon.png';
+import './images/favicon/favicon-16x16.png';
+import './images/favicon/favicon-32x32.png';
+import './images/favicon/favicon.ico';
+import './images/favicon/site.webmanifest';
+
 // Import CSS
 // - Bootstrap
 import './css/assets/bootstrap.css';
-import './bootstrap.css.map';
+import './css/assets/bootstrap.css.map';
 
 function createDiv(boostrapContainerId, containerClass) {
   const element = document.createElement('div');
