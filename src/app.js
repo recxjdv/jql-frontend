@@ -54,11 +54,41 @@ async function getAllEvents() {
   }
 }
 
+function addSimpleTag(parent, tagType) {
+  const newTag = document.createElement(tagType);
+  parent.appendChild(newTag);
+}
+
+function createJqlRecord(id, string, knownSafe) {
+  const eventDiv = document.createElement('div');
+  eventDiv.id = `div${id}`;
+  eventDiv.className = 'jqLogRecord';
+  addSimpleTag(eventDiv, 'hr');
+  const codeBlockForString = document.createElement('code');
+  const codeContent = document.createTextNode(string);
+  codeBlockForString.appendChild(codeContent);
+  eventDiv.appendChild(codeBlockForString);
+  addSimpleTag(eventDiv, 'br');
+  addSimpleTag(eventDiv, 'br');
+  const toggleButton = document.createElement('button');
+  toggleButton.type = 'button';
+  toggleButton.id = id;
+  toggleButton.className = 'jqLogRecordButton btn btn-sm';
+  if (knownSafe === 0) {
+    toggleButton.addClass('btn-outline-success');
+  } else {
+    toggleButton.addClass('btn-outline-danger');
+  }
+  const buttonText = document.createTextNode('Mark not safe');
+  toggleButton.appendChild(buttonText);
+  eventDiv.appendChild(toggleButton);
+  return eventDiv;
+}
+
 async function createApplicationView(view, applicationDiv) {
   applicationDiv.innerHTML = '';
   applicationDiv.appendChild(addHeader('h2', view));
 
-  // Show all logged events
   if (view === 'showAllEvents') {
     const eventsData = await getAllEvents();
     const eventsDataLength = eventsData.length;
@@ -87,29 +117,8 @@ async function createApplicationView(view, applicationDiv) {
     if (eventsDataLength > 0) {
       for (let i = 0; i < eventsDataLength; i += 1) {
         if (eventsData[i].knownSafe === 1 && eventsData[i].string !== undefined) {
-          // Duplicating poc layout - needs refining
-          const eventId = eventsData[i]._id;
-          const stringValue = eventsData[i].string;
-          const eventDiv = document.createElement('div');
-          eventDiv.id = `div${eventId}`;
-          eventDiv.className = 'jqLogRecord';
-          const eventHr = document.createElement('hr');
-          eventDiv.appendChild(eventHr);
-          const codeBlockForString = document.createElement('code');
-          const codeContent = document.createTextNode(stringValue);
-          codeBlockForString.appendChild(codeContent);
-          eventDiv.appendChild(codeBlockForString);
-          const firstBr = document.createElement('br');
-          eventDiv.appendChild(firstBr);
-          const secondBr = document.createElement('br');
-          eventDiv.appendChild(secondBr);
-          const toggleButton = document.createElement('button');
-          toggleButton.type = 'button';
-          toggleButton.id = eventId;
-          toggleButton.className = 'jqLogRecordButton btn btn-outline-danger btn-sm';
-          const buttonText = document.createTextNode('Mark not safe');
-          toggleButton.appendChild(buttonText);
-          eventDiv.appendChild(toggleButton);
+          // eslint-disable-next-line max-len
+          const eventDiv = createJqlRecord(eventsData[i]._id, eventsData[i].string, eventsData[i].knownSafe);
           applicationDiv.appendChild(eventDiv);
         }
       }
@@ -129,29 +138,8 @@ async function createApplicationView(view, applicationDiv) {
     if (eventsDataLength > 0) {
       for (let i = 0; i < eventsDataLength; i += 1) {
         if (eventsData[i].knownSafe === 0 && eventsData[i].string !== undefined) {
-          // Duplicating poc layout - needs refining
-          const eventId = eventsData[i]._id;
-          const stringValue = eventsData[i].string;
-          const eventDiv = document.createElement('div');
-          eventDiv.id = `div${eventId}`;
-          eventDiv.className = 'jqLogRecord';
-          const eventHr = document.createElement('hr');
-          eventDiv.appendChild(eventHr);
-          const codeBlockForString = document.createElement('code');
-          const codeContent = document.createTextNode(stringValue);
-          codeBlockForString.appendChild(codeContent);
-          eventDiv.appendChild(codeBlockForString);
-          const firstBr = document.createElement('br');
-          eventDiv.appendChild(firstBr);
-          const secondBr = document.createElement('br');
-          eventDiv.appendChild(secondBr);
-          const toggleButton = document.createElement('button');
-          toggleButton.type = 'button';
-          toggleButton.id = eventId;
-          toggleButton.className = 'jqLogRecordButton btn btn-outline-success btn-sm';
-          const buttonText = document.createTextNode('Mark known safe');
-          toggleButton.appendChild(buttonText);
-          eventDiv.appendChild(toggleButton);
+          // eslint-disable-next-line max-len
+          const eventDiv = createJqlRecord(eventsData[i]._id, eventsData[i].string, eventsData[i].knownSafe);
           applicationDiv.appendChild(eventDiv);
         }
       }
