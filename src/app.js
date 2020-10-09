@@ -59,6 +59,21 @@ function addSimpleTag(parent, tagType) {
   parent.appendChild(newTag);
 }
 
+// Ref: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function
+function doToggleKnownSafe(event) {
+  console.log(event.currentTarget.id);
+  console.log(event.currentTarget.safeState);
+  // Needs to send a PUT request updating the knownSafe state
+  // If successful
+  // - replace the div with a message saying so
+  // - after a timeout hide the div?
+  // If not successful - raise an error
+}
+
+function doDownloadKnownSafeJson() {
+  console.log('Download KnownSafe data as JSON clicked');
+}
+
 function createJqlRecord(id, string, knownSafe) {
   const eventDiv = document.createElement('div');
   eventDiv.id = `div${id}`;
@@ -75,12 +90,14 @@ function createJqlRecord(id, string, knownSafe) {
   toggleButton.id = id;
   toggleButton.className = 'jqLogRecordButton btn btn-sm';
   if (knownSafe === 0) {
-    toggleButton.addClass('btn-outline-success');
+    toggleButton.className = 'jqLogRecordButton btn btn-sm btn-outline-success';
   } else {
-    toggleButton.addClass('btn-outline-danger');
+    toggleButton.className = 'jqLogRecordButton btn btn-sm btn-outline-danger';
   }
   const buttonText = document.createTextNode('Mark not safe');
   toggleButton.appendChild(buttonText);
+  toggleButton.addEventListener('click', doToggleKnownSafe, false);
+  toggleButton.safeState = knownSafe;
   eventDiv.appendChild(toggleButton);
   return eventDiv;
 }
@@ -112,6 +129,13 @@ async function createApplicationView(view, applicationDiv) {
   }
 
   if (view === 'knownSafe') {
+    const downloadKnownSafeButton = document.createElement('button');
+    downloadKnownSafeButton.type = 'button';
+    downloadKnownSafeButton.className = 'btn btn-outline-primary';
+    const downloadKnownSafeButtonText = document.createTextNode('Download as JSON');
+    downloadKnownSafeButton.addEventListener('click', doDownloadKnownSafeJson, false);
+    downloadKnownSafeButton.appendChild(downloadKnownSafeButtonText);
+    applicationDiv.appendChild(downloadKnownSafeButton);
     const eventsData = await getAllEvents();
     const eventsDataLength = eventsData.length;
     if (eventsDataLength > 0) {
