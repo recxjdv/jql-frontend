@@ -30,17 +30,139 @@ function addHeader(headerSize, headerText) {
   return element;
 }
 
-// TODO:
-function getData(id) {
-  // if id
-  // return object containing a GET /events/{id} output
-  // else
-  // get /events/
+function assembleUrl(action) {
+  let url = localStorage.getItem('protocol');
+  url += '://';
+  url += localStorage.getItem('endpoint');
+  url += ':';
+  url += localStorage.getItem('port');
+  url += localStorage.getItem('path');
+  url += action;
+  return url;
 }
 
-function createApplicationView(view, applicationDiv) {
+async function getAllEvents() {
+  const action = '/events';
+  const url = assembleUrl(action);
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+  } catch(err) {
+    alert(err);
+    return {};
+  }
+}
+
+async function createApplicationView(view, applicationDiv) {
   applicationDiv.innerHTML = '';
   applicationDiv.appendChild(addHeader('h2', view));
+
+  // Show all logged events
+  if (view === 'showAllEvents') {
+    const eventsData = await getAllEvents();
+    const eventsDataLength = eventsData.length;
+    if (eventsDataLength > 0) {
+      for (let i = 0; i < eventsDataLength; i += 1) {
+        const eventDataItem = JSON.stringify(eventsData[i], null, 4);
+        const eventDiv = document.createElement('div');
+        const eventDivPre = document.createElement('pre');
+        const eventDivContent = document.createTextNode(eventDataItem);
+        eventDivPre.appendChild(eventDivContent);
+        eventDiv.appendChild(eventDivPre);
+        applicationDiv.appendChild(eventDiv);
+      }
+    } else {
+      const noEventsText = 'No events have been logged.';
+      const noEventsParagraph = document.createElement('p');
+      const noEventsParagraphText = document.createTextNode(noEventsText);
+      noEventsParagraph.appendChild(noEventsParagraphText);
+      applicationDiv.appendChild(noEventsParagraph);
+    }
+  }
+
+  if (view === 'knownSafe') {
+    const eventsData = await getAllEvents();
+    const eventsDataLength = eventsData.length;
+    if (eventsDataLength > 0) {
+      for (let i = 0; i < eventsDataLength; i += 1) {
+        if (eventsData[i].knownSafe === 1 && eventsData[i].string !== undefined) {
+          // Duplicating poc layout - needs refining
+          const eventId = eventsData[i]._id;
+          const stringValue = eventsData[i].string;
+          const eventDiv = document.createElement('div');
+          eventDiv.id = `div${eventId}`;
+          eventDiv.className = 'jqLogRecord';
+          const eventHr = document.createElement('hr');
+          eventDiv.appendChild(eventHr);
+          const codeBlockForString = document.createElement('code');
+          const codeContent = document.createTextNode(stringValue);
+          codeBlockForString.appendChild(codeContent);
+          eventDiv.appendChild(codeBlockForString);
+          const firstBr = document.createElement('br');
+          eventDiv.appendChild(firstBr);
+          const secondBr = document.createElement('br');
+          eventDiv.appendChild(secondBr);
+          const toggleButton = document.createElement('button');
+          toggleButton.type = 'button';
+          toggleButton.id = eventId;
+          toggleButton.className = 'jqLogRecordButton btn btn-outline-danger btn-sm';
+          const buttonText = document.createTextNode('Mark not safe');
+          toggleButton.appendChild(buttonText);
+          eventDiv.appendChild(toggleButton);
+          applicationDiv.appendChild(eventDiv);
+        }
+      }
+    } else {
+      const noEventsText = 'No events have been logged.';
+      const noEventsParagraph = document.createElement('p');
+      const noEventsParagraphText = document.createTextNode(noEventsText);
+      noEventsParagraph.appendChild(noEventsParagraphText);
+      applicationDiv.appendChild(noEventsParagraph);
+    }
+  }
+
+  // Show logged events that are not safe
+  if (view === 'knownUnsafe') {
+    const eventsData = await getAllEvents();
+    const eventsDataLength = eventsData.length;
+    if (eventsDataLength > 0) {
+      for (let i = 0; i < eventsDataLength; i += 1) {
+        if (eventsData[i].knownSafe === 0 && eventsData[i].string !== undefined) {
+          // Duplicating poc layout - needs refining
+          const eventId = eventsData[i]._id;
+          const stringValue = eventsData[i].string;
+          const eventDiv = document.createElement('div');
+          eventDiv.id = `div${eventId}`;
+          eventDiv.className = 'jqLogRecord';
+          const eventHr = document.createElement('hr');
+          eventDiv.appendChild(eventHr);
+          const codeBlockForString = document.createElement('code');
+          const codeContent = document.createTextNode(stringValue);
+          codeBlockForString.appendChild(codeContent);
+          eventDiv.appendChild(codeBlockForString);
+          const firstBr = document.createElement('br');
+          eventDiv.appendChild(firstBr);
+          const secondBr = document.createElement('br');
+          eventDiv.appendChild(secondBr);
+          const toggleButton = document.createElement('button');
+          toggleButton.type = 'button';
+          toggleButton.id = eventId;
+          toggleButton.className = 'jqLogRecordButton btn btn-outline-success btn-sm';
+          const buttonText = document.createTextNode('Mark known safe');
+          toggleButton.appendChild(buttonText);
+          eventDiv.appendChild(toggleButton);
+          applicationDiv.appendChild(eventDiv);
+        }
+      }
+    } else {
+      const noEventsText = 'No events have been logged.';
+      const noEventsParagraph = document.createElement('p');
+      const noEventsParagraphText = document.createTextNode(noEventsText);
+      noEventsParagraph.appendChild(noEventsParagraphText);
+      applicationDiv.appendChild(noEventsParagraph);
+    }
+  }
 }
 
 // Ref: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function
@@ -94,8 +216,22 @@ function renderPage(destinations, applicationDiv, navgationDiv) {
   createApplicationView('home', applicationDiv);
 }
 
-// Log environment to the console
-console.log(`Application running in ${process.env.NODE_ENV} mode`);
+// Import variables from the .env file
+if (process.env.NODE_ENV === 'development') {
+  console.log(`Application running in ${process.env.NODE_ENV} mode`);
+  localStorage.setItem('protocol', process.env.DEV_API_PROTOCOL);
+  localStorage.setItem('endpoint', process.env.DEV_API_ENDPOINT);
+  localStorage.setItem('port', process.env.DEV_API_PORT);
+  localStorage.setItem('path', process.env.DEV_API_PATH);
+} else if (process.env.NODE_ENV === 'production') {
+  console.log(`Application running in ${process.env.NODE_ENV} mode`);
+  localStorage.setItem('protocol', process.env.PROD_API_PROTOCOL);
+  localStorage.setItem('endpoint', process.env.PROD_API_ENDPOINT);
+  localStorage.setItem('port', process.env.PROD_API_PORT);
+  localStorage.setItem('path', process.env.PROD_API_PATH);
+} else {
+  console.log(`Error unknown application environment: ${process.env.NODE_ENV}`);
+}
 
 // Create outer Bootstrap container
 const boostrapContainerClass = 'container';
@@ -120,7 +256,7 @@ boostrapContainer.appendChild(createDiv(applicationDivId, applicationDivClass));
 const destinations = [
   'home',
   'showAllEvents',
-  'showEvent',
+  // 'showEvent',
   'knownSafe',
   'knownUnsafe'
 ];
