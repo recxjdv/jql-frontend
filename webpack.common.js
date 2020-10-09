@@ -1,5 +1,6 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -12,6 +13,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
+    new Dotenv(),
     new HtmlWebpackPlugin({
       title: 'Frontend | jql',
     }),
