@@ -34,13 +34,16 @@ function assembleUrl(action) {
   let url = localStorage.getItem('protocol');
   url += '://';
   url += localStorage.getItem('endpoint');
-  url += ':';
-  url += localStorage.getItem('port');
+  if (localStorage.getItem('port') !== 80 || localStorage.getItem('port') !== 443) {
+    url += ':';
+    url += localStorage.getItem('port');
+  }
   url += localStorage.getItem('path');
   url += action;
   return url;
 }
 
+// TODO: check the return code of the request.
 async function getAllEvents() {
   const action = '/events';
   const url = assembleUrl(action);
@@ -59,15 +62,57 @@ function addSimpleTag(parent, tagType) {
   parent.appendChild(newTag);
 }
 
+async function sendTogglePut(url, desiredState) {
+  const data = { knownSafe: desiredState };
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  const updatedRecord = await response.json();
+  if (data.knownSafe === updatedRecord.knownSafe) {
+    return true;
+  }
+  return false;
+}
+
+// Ref: https://stackoverflow.com/questions/6911235/is-there-a-better-way-of-writing-v-v-0-1-0
+function toggleValue(value) {
+  if (value === 0) {
+    return 1;
+  }
+  return 0;
+}
+
 // Ref: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function
-function doToggleKnownSafe(event) {
-  console.log(event.currentTarget.id);
-  console.log(event.currentTarget.safeState);
-  // Needs to send a PUT request updating the knownSafe state
-  // If successful
-  // - replace the div with a message saying so
-  // - after a timeout hide the div?
-  // If not successful - raise an error
+async function doToggleKnownSafe(event) {
+  const eventId = event.currentTarget.id;
+  const action = `/events/${eventId}`;
+  const url = assembleUrl(action);
+  const desiredState = toggleValue(event.currentTarget.safeState);
+  const alert = {
+    class: 'alert alert-success'
+  };
+  if (desiredState === 0) {
+    alert.message = 'String flagged as known safe';
+  }
+  if (desiredState === 1) {
+    alert.message = 'String flagged as not safe';
+  }
+  const updatedRecord = await sendTogglePut(url, desiredState);
+  if (updatedRecord === true) {
+    const divID = `div${eventId}`;
+    const parentDiv = document.getElementById(divID);
+    parentDiv.innerHTML = '';
+    // const alertHr = document.createElement('hr');
+    const alertDiv = document.createElement('div');
+    alertDiv.className = alert.class;
+    const alertText = document.createTextNode(alert.message);
+    alertDiv.appendChild(alertText);
+    parentDiv.appendChild(alertDiv);
+  }
 }
 
 function doDownloadKnownSafeJson() {
@@ -147,7 +192,7 @@ async function createApplicationView(view, applicationDiv) {
         }
       }
     } else {
-      const noEventsText = 'No events have been logged.';
+      const noEventsText = 'No knownSafe events have been logged.';
       const noEventsParagraph = document.createElement('p');
       const noEventsParagraphText = document.createTextNode(noEventsText);
       noEventsParagraph.appendChild(noEventsParagraphText);
@@ -168,7 +213,7 @@ async function createApplicationView(view, applicationDiv) {
         }
       }
     } else {
-      const noEventsText = 'No events have been logged.';
+      const noEventsText = 'No unsafe events have been logged.';
       const noEventsParagraph = document.createElement('p');
       const noEventsParagraphText = document.createTextNode(noEventsText);
       noEventsParagraph.appendChild(noEventsParagraphText);
@@ -231,13 +276,13 @@ function renderPage(destinations, applicationDiv, navgationDiv) {
 // Import variables from the .env file
 if (process.env.NODE_ENV === 'development') {
   console.log(`Application running in ${process.env.NODE_ENV} mode`);
-  localStorage.setItem('protocol', process.env.DEV_API_PROTOCOL);
+  localStorage.setItem('protocol', process.env.DEV_API_PROTOCOL.toLowerCase());
   localStorage.setItem('endpoint', process.env.DEV_API_ENDPOINT);
   localStorage.setItem('port', process.env.DEV_API_PORT);
   localStorage.setItem('path', process.env.DEV_API_PATH);
 } else if (process.env.NODE_ENV === 'production') {
   console.log(`Application running in ${process.env.NODE_ENV} mode`);
-  localStorage.setItem('protocol', process.env.PROD_API_PROTOCOL);
+  localStorage.setItem('protocol', process.env.PROD_API_PROTOCOL.toLowerCase());
   localStorage.setItem('endpoint', process.env.PROD_API_ENDPOINT);
   localStorage.setItem('port', process.env.PROD_API_PORT);
   localStorage.setItem('path', process.env.PROD_API_PATH);
@@ -250,9 +295,6 @@ const boostrapContainerClass = 'container';
 const boostrapContainerId = 'boostrapContainer';
 document.body.appendChild(createDiv(boostrapContainerId, boostrapContainerClass));
 const boostrapContainer = document.getElementById(boostrapContainerId);
-
-// Create title header
-// boostrapContainer.appendChild(addHeader('h1', 'jql FrontEnd'));
 
 // Create navigation container
 const navigationDivClass = 'navigation';
@@ -268,7 +310,6 @@ boostrapContainer.appendChild(createDiv(applicationDivId, applicationDivClass));
 const destinations = [
   'home',
   'showAllEvents',
-  // 'showEvent',
   'knownSafe',
   'knownUnsafe'
 ];
