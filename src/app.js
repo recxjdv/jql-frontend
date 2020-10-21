@@ -57,6 +57,42 @@ async function getAllEvents() {
   }
 }
 
+async function doSearchEvents() {
+  const searchInputId = 'searchFormInput';
+  const searchString = document.getElementById(searchInputId).value;
+  const resultsDivId = 'resultsDiv';
+  const resultsDiv = document.getElementById(resultsDivId);
+  resultsDiv.innerHTML = '';
+  const action = `/events/?search=${searchString}`;
+  const url = assembleUrl(action);
+  try {
+    const response = await fetch(url);
+    const eventsData = await response.json();
+    const eventsDataLength = eventsData.length;
+    if (eventsDataLength > 0) {
+      for (let i = 0; i < eventsDataLength; i += 1) {
+        const eventDataItem = JSON.stringify(eventsData[i], null, 4);
+        const eventDiv = document.createElement('div');
+        const eventDivPre = document.createElement('pre');
+        const eventDivContent = document.createTextNode(eventDataItem);
+        eventDivPre.appendChild(eventDivContent);
+        eventDiv.appendChild(eventDivPre);
+        resultsDiv.appendChild(eventDiv);
+      }
+    } else {
+      const noEventsText = 'Search did not match any events.';
+      const noEventsParagraph = document.createElement('p');
+      const noEventsParagraphText = document.createTextNode(noEventsText);
+      noEventsParagraph.appendChild(noEventsParagraphText);
+      resultsDiv.appendChild(noEventsParagraph);
+    }
+    return eventsData;
+  } catch (err) {
+    console.log(err);
+    return {};
+  }
+}
+
 function addSimpleTag(parent, tagType) {
   const newTag = document.createElement(tagType);
   parent.appendChild(newTag);
@@ -171,6 +207,38 @@ async function createApplicationView(view, applicationDiv) {
       noEventsParagraph.appendChild(noEventsParagraphText);
       applicationDiv.appendChild(noEventsParagraph);
     }
+  }
+
+  if (view === 'searchEvents') {
+    const searchForm = document.createElement('form');
+    const searchFormDiv = document.createElement('div');
+    searchFormDiv.className = 'form-group';
+    const searchFormLabel = document.createElement('label');
+    searchFormLabel.setAttribute('for', 'searchInput');
+    const searchFormLabelText = document.createTextNode('Events Search');
+    searchFormLabel.appendChild(searchFormLabelText);
+    searchFormDiv.appendChild(searchFormLabel);
+    const searchFormInput = document.createElement('input');
+    searchFormInput.type = 'adf';
+    searchFormInput.className = 'form-control';
+    searchFormInput.id = 'searchFormInput';
+    searchFormInput.placeholder = 'Enter search';
+    searchFormDiv.appendChild(searchFormInput);
+    searchForm.appendChild(searchFormDiv);
+    const searchFormButton = document.createElement('button');
+    searchFormButton.type = 'submit';
+    searchFormButton.className = 'btn btn-primary';
+    const searchFormButtonText = document.createTextNode('Submit');
+    searchFormButton.appendChild(searchFormButtonText);
+    searchFormButton.addEventListener('click', doSearchEvents, false);
+    searchForm.appendChild(searchFormButton);
+    applicationDiv.appendChild(searchForm);
+    addSimpleTag(applicationDiv, 'br');
+    addSimpleTag(applicationDiv, 'hr');
+    const resultsDiv = document.createElement('div');
+    resultsDiv.className = 'resultsDiv';
+    resultsDiv.id = 'resultsDiv';
+    applicationDiv.appendChild(resultsDiv);
   }
 
   if (view === 'knownSafe') {
@@ -310,6 +378,7 @@ boostrapContainer.appendChild(createDiv(applicationDivId, applicationDivClass));
 const destinations = [
   'home',
   'showAllEvents',
+  'searchEvents',
   'knownSafe',
   'knownUnsafe'
 ];
