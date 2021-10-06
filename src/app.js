@@ -132,10 +132,10 @@ async function doToggleKnownSafe(event) {
     class: 'alert alert-success'
   };
   if (desiredState === 0) {
-    alert.message = 'String flagged as known safe';
+    alert.message = 'String flagged as safe';
   }
   if (desiredState === 1) {
-    alert.message = 'String flagged as not safe';
+    alert.message = 'String flagged as unsafe';
   }
   const updatedRecord = await sendTogglePut(url, desiredState);
   if (updatedRecord === true) {
