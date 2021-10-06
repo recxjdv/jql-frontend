@@ -116,9 +116,12 @@ async function sendTogglePut(url, desiredState) {
 
 // Ref: https://stackoverflow.com/questions/6911235/is-there-a-better-way-of-writing-v-v-0-1-0
 function toggleValue(value) {
+  console.log('value is: ' + value);
   if (value === 0) {
+    console.log('zero to one');
     return 1;
   }
+  console.log('one to zero');
   return 0;
 }
 
@@ -132,17 +135,16 @@ async function doToggleKnownSafe(event) {
     class: 'alert alert-success'
   };
   if (desiredState === 0) {
-    alert.message = 'String flagged as safe';
+    alert.message = 'String flagged as unsafe';
   }
   if (desiredState === 1) {
-    alert.message = 'String flagged as unsafe';
+    alert.message = 'String flagged as safe';
   }
   const updatedRecord = await sendTogglePut(url, desiredState);
   if (updatedRecord === true) {
     const divID = `div${eventId}`;
     const parentDiv = document.getElementById(divID);
     parentDiv.innerHTML = '';
-    // const alertHr = document.createElement('hr');
     const alertDiv = document.createElement('div');
     alertDiv.className = alert.class;
     const alertText = document.createTextNode(alert.message);
