@@ -169,13 +169,15 @@ function createJqlRecord(id, string, knownSafe) {
   const toggleButton = document.createElement('button');
   toggleButton.type = 'button';
   toggleButton.id = id;
+  let buttonText = '';
   if (knownSafe === 0) {
     toggleButton.className = 'jqLogRecordButton btn btn-sm btn-outline-success';
+    buttonText = 'Mark safe';
   } else {
     toggleButton.className = 'jqLogRecordButton btn btn-sm btn-outline-danger';
+    buttonText = 'Mark not safe'
   }
-  const buttonText = document.createTextNode('Mark not safe');
-  toggleButton.appendChild(buttonText);
+  toggleButton.appendChild(document.createTextNode(buttonText));
   toggleButton.addEventListener('click', doToggleKnownSafe, false);
   toggleButton.safeState = knownSafe;
   eventDiv.appendChild(toggleButton);
