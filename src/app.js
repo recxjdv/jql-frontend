@@ -113,12 +113,9 @@ async function sendTogglePut(url, desiredState) {
 
 // Ref: https://stackoverflow.com/questions/6911235/is-there-a-better-way-of-writing-v-v-0-1-0
 function toggleValue(value) {
-  console.log('value is: ' + value);
   if (value === 0) {
-    console.log('zero to one');
     return 1;
   }
-  console.log('one to zero');
   return 0;
 }
 
@@ -343,14 +340,13 @@ function renderPage(destinations, applicationDiv, navgationDiv) {
 }
 
 // Import variables from the .env file
+console.log(`Application running in ${process.env.NODE_ENV} mode`);
 if (process.env.NODE_ENV === 'development') {
-  console.log(`Application running in ${process.env.NODE_ENV} mode`);
   localStorage.setItem('protocol', process.env.DEV_API_PROTOCOL.toLowerCase());
   localStorage.setItem('endpoint', process.env.DEV_API_ENDPOINT);
   localStorage.setItem('port', process.env.DEV_API_PORT);
   localStorage.setItem('path', process.env.DEV_API_PATH);
 } else if (process.env.NODE_ENV === 'production') {
-  console.log(`Application running in ${process.env.NODE_ENV} mode`);
   localStorage.setItem('protocol', process.env.PROD_API_PROTOCOL.toLowerCase());
   localStorage.setItem('endpoint', process.env.PROD_API_ENDPOINT);
   localStorage.setItem('port', process.env.PROD_API_PORT);
