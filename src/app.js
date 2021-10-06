@@ -169,7 +169,6 @@ function createJqlRecord(id, string, knownSafe) {
   const toggleButton = document.createElement('button');
   toggleButton.type = 'button';
   toggleButton.id = id;
-  toggleButton.className = 'jqLogRecordButton btn btn-sm';
   if (knownSafe === 0) {
     toggleButton.className = 'jqLogRecordButton btn btn-sm btn-outline-success';
   } else {
