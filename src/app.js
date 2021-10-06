@@ -1,6 +1,3 @@
-// import $ from 'jquery';
-// import bootstrap from 'bootstrap';
-
 // Import Images
 // - favicon (Ref: https://favicon.io/favicon-generator/)
 import './images/favicon/android-chrome-192x192.png';
