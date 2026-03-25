@@ -21,22 +21,22 @@
   "homepage": "https://github.com/recxjdv/jql-frontend#readme",
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",
-    "css-loader": "^6.7.1",
-    "dotenv-webpack": "^8.0.1",
-    "eslint": "^8.25.0",
+    "css-loader": "^6.11.0",
+    "dotenv-webpack": "^8.1.1",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-import": "^2.32.0",
     "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.5.0",
-    "style-loader": "^3.3.1",
-    "webpack": "^5.105.0",
+    "html-webpack-plugin": "^5.6.6",
+    "style-loader": "^3.3.4",
+    "webpack": "^5.105.4",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^5.2.1",
-    "webpack-merge": "^5.8.0"
+    "webpack-dev-server": "^5.2.3",
+    "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "bootstrap": "^5.2.2",
-    "jquery": "^3.6.1",
+    "bootstrap": "^5.3.8",
+    "jquery": "^3.7.1",
     "popper.js": "^1.16.1"
   }
 }
